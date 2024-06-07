@@ -1,8 +1,8 @@
 .vscode/
 
-.out
-.exe
-.o
+*.out
+*.exe
+*.o
 
 not_add/
 
