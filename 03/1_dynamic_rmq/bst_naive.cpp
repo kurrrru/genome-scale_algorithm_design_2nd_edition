@@ -19,6 +19,10 @@ struct bst_naive
 {
 	bst_naive(Value _inf) : root(nullptr), inf(_inf), size(0), capacity(0) {}
 
+	// bst_naive::build
+	// @ keys: the keys of the nodes to be built
+	// build the semi-dynamic balanced binary search tree with the given keys
+	// return: void
 	void build(const vector<Key> &keys)
 	{
 		size = keys.size();
@@ -93,7 +97,7 @@ private:
 		if (cur == nullptr || cur->key < idx) return (false);
 		bool res = false;
 		if (cur->key > idx)
-			res = update_rec(cur->left, idx, val) || update_rec(cur->right, idx, val); // 違うかも
+			res = update_rec(cur->left, idx, val) || update_rec(cur->right, idx, val);
 		else if (cur->key == idx && cur->right != nullptr)
 			res = update_rec(cur->right, idx, val);
 		else
