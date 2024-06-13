@@ -61,7 +61,7 @@ struct bitvector {
 	// return: the occurrence of 1 in [0, i)
 	int rank(int i)
 	{
-		assert(i <= _len);
+		assert(i < _len);
 		return (_sum[i >> 5] + popcount(_bit[i >> 5] & ((1u << (i & 0b11111)) - 1)));
 	}
 
