@@ -13,9 +13,7 @@ Also, the select operation can be done in constant time in theory,
 but it is O(log n) in this implementation.
 */
 
-#include <iostream>
-#include <vector>
-#include <cassert>
+#include "bitvector.h"
 
 static unsigned int popcount(unsigned int x)
 {
@@ -27,90 +25,69 @@ static unsigned int popcount(unsigned int x)
 	return (x);
 }
 
-struct bitvector {
-	bitvector() = default;
-	bitvector(std::vector<bool> &arr) { build(arr); }
+bitvector::bitvector() = default;
 
-	// build
-	// @ arr: input array
-	// return: void
-	void build(std::vector<bool> &arr)
-	{
-		_len = arr.size();
-		_num_blocks = (_len + 0b11111) >> 5;
-		_bit.assign(_num_blocks, 0u);
-		_sum.assign(_num_blocks + 1, 0u);
-		_set(arr);
-		for (std::size_t i = 1; i <= _num_blocks; i++)
-			_sum[i] = _sum[i - 1] + popcount(_bit[i - 1]);
-	}
-
-	// operator[]
-	// @ i: index
-	// return: value of the bit at index i
-	bool operator[](int i)
-	{
-		assert(i < _len);
-		return (_bit[i >> 5] & (1u << (i & 0b11111)));
-	}
-
-	// rank
-	// @ i: index
-	// Count the occurrence of 1 in [0, i) in O(1) time
-	// O(n) bits are used in this implementation, but it can be reduced to n + o(n) bits
-	// return: the occurrence of 1 in [0, i)
-	int rank(int i)
-	{
-		assert(i <= _len);
-		return (_sum[i >> 5] + popcount(_bit[i >> 5] & ((1u << (i & 0b11111)) - 1)));
-	}
-
-	// select
-	// @ j: the j-th occurrence of 1
-	// Ideally, time complexity is O(1), but it is O(log n) in this implementation 
-	// return: the index of the j-th occurrence of 1
-	int select(int j)
-	{
-		assert(0 < j && j <= _sum[_num_blocks]);
-		int left = -1, right = _len;
-		while (left + 1 < right)
-		{
-			int mid = (left + right) >> 1;
-			if (rank(mid) < j)
-				left = mid;
-			else
-				right = mid;
-		}
-		return (left);
-	}
-
-private:
-	std::vector<unsigned int> _bit;
-	std::vector<unsigned int> _sum;
-	int _num_blocks;
-	int _len;
-
-	void	_set(std::vector<bool> &arr)
-	{
-		for (int i = 0; i < _len; i++)
-			if (arr[i])
-				_bit[i >> 5] |= 1u << (i & 0b11111);
-	}
-};
-
-int main(void)
+bitvector::bitvector(std::vector<bool> &arr)
 {
-	std::vector<bool> arr = { 1, 0, 1, 1, 0, 1, 0, 0, 1, 1};
-	bitvector bv;
-	bv.build(arr);
-	for (int i = 0; i < (int)arr.size(); i++)
-		std::cout << "bv[" << i << "] = " << bv[i] << std::endl;
-	
-	for (int i = 0; i <= (int)arr.size(); i++)
-		std::cout << "rank(" << i << ") = " << bv.rank(i) << std::endl;
+	build(arr);
+}
 
-	for (int i = 1; i <= bv.rank((int)arr.size()); i++)
-		std::cout << "select(" << i << ") = " << bv.select(i) << std::endl;
+// build
+// @ arr: input array
+// return: void
+void bitvector::build(std::vector<bool> &arr)
+{
+	_len = arr.size();
+	_num_blocks = (_len + 0b11111) >> 5;
+	_bit.assign(_num_blocks, 0u);
+	_sum.assign(_num_blocks + 1, 0u);
+	_set(arr);
+	for (std::size_t i = 1; i <= _num_blocks; i++)
+		_sum[i] = _sum[i - 1] + popcount(_bit[i - 1]);
+}
 
-	return (0);
+// operator[]
+// @ i: index
+// return: value of the bit at index i
+bool bitvector::operator[](int i)
+{
+	assert(i < _len);
+	return (_bit[i >> 5] & (1u << (i & 0b11111)));
+}
+
+// rank
+// @ i: index
+// Count the occurrence of 1 in [0, i) in O(1) time
+// O(n) bits are used in this implementation, but it can be reduced to n + o(n) bits
+// return: the occurrence of 1 in [0, i)
+int bitvector::rank(int i)
+{
+	assert(i <= _len);
+	return (_sum[i >> 5] + popcount(_bit[i >> 5] & ((1u << (i & 0b11111)) - 1)));
+}
+
+// select
+// @ j: the j-th occurrence of 1
+// Ideally, time complexity is O(1), but it is O(log n) in this implementation
+// return: the index of the j-th occurrence of 1
+int bitvector::select(int j)
+{
+	assert(0 < j && j <= _sum[_num_blocks]);
+	int left = -1, right = _len;
+	while (left + 1 < right)
+	{
+		int mid = (left + right) >> 1;
+		if (rank(mid) < j)
+			left = mid;
+		else
+			right = mid;
+	}
+	return (left);
+}
+
+void bitvector::_set(std::vector<bool> &arr)
+{
+	for (int i = 0; i < _len; i++)
+		if (arr[i])
+			_bit[i >> 5] |= 1u << (i & 0b11111);
 }
