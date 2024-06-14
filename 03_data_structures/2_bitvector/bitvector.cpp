@@ -63,6 +63,8 @@ bool bitvector::operator[](int i)
 int bitvector::rank(int i)
 {
 	assert(i <= _len);
+	if (i == 0)
+		return (0);
 	return (_sum[i >> 5] + popcount(_bit[i >> 5] & ((1u << (i & 0b11111)) - 1)));
 }
 
