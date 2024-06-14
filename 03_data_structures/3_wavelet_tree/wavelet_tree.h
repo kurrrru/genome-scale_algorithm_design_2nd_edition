@@ -1,7 +1,7 @@
 #ifndef WAVELET_TREE_H
 #define WAVELET_TREE_H
 
-#include "bitvector.h"
+#include "../2_bitvector/bitvector.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
