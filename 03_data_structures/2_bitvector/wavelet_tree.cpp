@@ -1,14 +1,32 @@
+/*
+Wavelet Tree
+
+This is an implementation of a wavelet tree data structure. 
+It supports the following operations:
+- build: build a wavelet tree from an input array
+- access: get the value of the bit at index i
+- rank: count the occurrence of c in [0, i)
+- range_count: count the number of k that satisfies i <= k < j and lower <= T[k] < upper
+- range_list: list the characters in [i, j) that satisfies lower <= T[k] < upper
+- freq: count the number of k that satisfies i <= k < j and T[k] = c
+- is_range_unary: check if the range [i, j) is unary
+
+It will support the following operations in the future:
+- select: get the index of the j-th occurrence of c
+*/
+
 #include "wavelet_tree.h"
+#include <iostream>
 
 static int bit_width(int x)
 {
-	int res = 0;
+	int ret = 0;
 	while (x)
 	{
 		x >>= 1;
-		res++;
+		ret++;
 	}
-	return (res);
+	return (ret);
 }
 
 wavelet_tree::_node::_node(int l, int r, std::vector<bool> &arr)
@@ -29,7 +47,10 @@ wavelet_tree::wavelet_tree(std::vector<int> &arr)
 void wavelet_tree::build(std::vector<int> &arr)
 {
 	_len = arr.size();
-	_size = *std::max_element(arr.begin(), arr.end());
+	if (_len == 0)
+		_size = 0;
+	else
+		_size = *std::max_element(arr.begin(), arr.end()) + 1;
 	_capacity = 1 << bit_width(_size);
 	_build_rec(&root, arr, 0, _capacity);
 }
@@ -42,12 +63,12 @@ int wavelet_tree::access(int i)
 {
 	assert(i < _len);
 	_node *cur = root;
-	int res = 0;
+	int ret = 0;
 	while (cur != nullptr && cur->_l < cur->_r - 1)
 	{
 		if (cur->_bv[i])
 		{
-			res += (cur->_r - cur->_l) / 2;
+			ret += (cur->_r - cur->_l) / 2;
 			i = cur->_bv.rank(i);
 			cur = cur->right;
 		}
@@ -57,7 +78,7 @@ int wavelet_tree::access(int i)
 			cur = cur->left;
 		}
 	}
-	return (res);
+	return (ret);
 }
 
 // wavelet_tree::rank
@@ -67,7 +88,9 @@ int wavelet_tree::access(int i)
 // return: the occurrence of c in [0, i)
 int wavelet_tree::rank(int i, int c)
 {
-	assert(i < _len && c < _size);
+	assert(i <= _len);
+	if (i == 0 || c >= _size)
+		return (0);
 	_node *cur = root;
 	while (cur->_l < cur->_r - 1)
 	{
@@ -88,16 +111,6 @@ int wavelet_tree::rank(int i, int c)
 	return (i);
 }
 
-// wavelet_tree::select
-// @ i: index
-// @ c: character
-// Find the i-th occurrence of c.
-// return: the index of the i-th occurrence of c
-// int wavelet_tree::select(int i, int c)
-// {
-// 	// not implemented yet
-// }
-
 // wavelet_tree::range_count
 // @ i: index (inclusive)
 // @ j: index (exclusive)
@@ -107,7 +120,7 @@ int wavelet_tree::rank(int i, int c)
 // return: the number of k that satisfies the condition
 int wavelet_tree::range_count(int i, int j, int lower, int upper)
 {
-	assert(i < j && lower < upper);
+	assert(lower <= upper);
 	return (_range_count_rec(root, i, j, lower, upper));
 }
 
@@ -129,11 +142,23 @@ int wavelet_tree::freq(int i, int j, int c)
 // return: true if the range is unary, false otherwise
 bool wavelet_tree::is_range_unary(int i, int j)
 {
-	int c = access(i);
-	return (freq(i, j, c) == j - i);
+	assert(i < _len);
+	return (freq(i, j, access(i)) == j - i);
 }
 
-
+// wavelet_tree::range_list
+// @ i: index (inclusive)
+// @ j: index (exclusive)
+// @ lower: lower bound of the range of characters (inclusive)
+// @ upper: upper bound of the range of characters (exclusive)
+// list the characters in [i, j) that satisfies lower <= T[k] < upper
+// return: the list of characters
+std::vector<int> wavelet_tree::range_list(int i, int j, int lower, int upper)
+{
+	std::vector<int> v;
+	_range_list_rec(root, i, j, lower, upper, v);
+	return (v);
+}
 
 void wavelet_tree::_build_rec(_node **cur, std::vector<int> &arr, int lower, int upper)
 {
@@ -159,10 +184,23 @@ void wavelet_tree::_build_rec(_node **cur, std::vector<int> &arr, int lower, int
 
 int wavelet_tree::_range_count_rec(_node *cur, int i, int j, int lower, int upper)
 {
-	if (cur == nullptr || cur->_l >= cur->_r - 1 || i >= j || upper <= cur->_l || lower >= cur->_r)
+	if (cur == nullptr || i >= j || upper <= cur->_l || lower >= cur->_r)
 		return (0);
 	if (lower <= cur->_l && cur->_r <= upper)
-		return (cur->_bv.rank(j) - cur->_bv.rank(i));
-	return (_range_count_rec(cur->left, cur->_bv.rank(i), cur->_bv.rank(j), lower, upper) +
-			_range_count_rec(cur->right, i - cur->_bv.rank(i), j - cur->_bv.rank(j), lower, upper));
+		return (j - i);
+	return (_range_count_rec(cur->right, cur->_bv.rank(i), cur->_bv.rank(j), lower, upper) +
+			_range_count_rec(cur->left, i - cur->_bv.rank(i), j - cur->_bv.rank(j), lower, upper));
+}
+
+void wavelet_tree::_range_list_rec(_node *cur, int i, int j, int lower, int upper, std::vector<int> &v)
+{
+	if (cur == nullptr || i >= j || upper <= cur->_l || lower >= cur->_r)
+		return ;
+	if (lower <= cur->_l && cur->_r <= upper && cur->_l == cur->_r - 1)
+	{
+		v.push_back(cur->_l);
+		return ;
+	}
+	_range_list_rec(cur->left, i - cur->_bv.rank(i), j - cur->_bv.rank(j), lower, upper, v);
+	_range_list_rec(cur->right, cur->_bv.rank(i), cur->_bv.rank(j), lower, upper, v);
 }
