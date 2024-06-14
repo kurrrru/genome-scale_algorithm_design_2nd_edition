@@ -15,7 +15,7 @@ It will support the following operations in the future:
 - select: get the index of the j-th occurrence of c
 */
 
-#include "bitvector.h"
+#include "../2_bitvector/bitvector.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
