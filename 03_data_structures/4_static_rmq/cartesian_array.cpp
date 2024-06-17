@@ -5,12 +5,6 @@
 
 struct cartesian
 {
-	
-	int _root;
-	int _n;
-	std::vector<int> _parent;
-	std::vector<int> _right;
-	std::vector<int> _left;
 	cartesian() = default;
 	void build(std::vector<int> &arr)
 	{
@@ -57,7 +51,7 @@ struct cartesian
 
 	std::string parentheses(int cur)
 	{
-		if (cur == -1)
+		if (cur == -1 || cur >= _n)
 			return ("");
 		std::string result;
 		result += "(";
@@ -67,13 +61,44 @@ struct cartesian
 		result += ")";
 		return (result);
 	}
+
+	std::vector<int> depth_array()
+	{
+		std::vector<int> depth;
+		depth.push_back(-1);
+		depth_array_rec(_root, depth);
+		return (std::vector<int>(depth.begin() + 1, depth.end() - 1));
+	}
+
+private:
+	int _root;
+	int _n;
+	std::vector<int> _parent;
+	std::vector<int> _right;
+	std::vector<int> _left;
+
+	void depth_array_rec(int cur, std::vector<int> &depth)
+	{
+		if (cur == -1)
+			return ;
+		depth.push_back(depth.end()[-1] + 1);
+		depth_array_rec(_left[cur], depth);
+		depth_array_rec(_right[cur], depth);
+		depth.push_back(depth.end()[-1] - 1);
+	}
 };
 
 int main()
 {
-	std::vector<int> values = {1, 4, 3, 5, 0, 4, 5, 3, 7};
+	std::vector<int> values = {7, 2, 4, 3, 0, 6, 8, 1, 5};
 	cartesian tree;
 	tree.build(values);
 	std::cout << tree.parentheses() << std::endl;
+	std::vector<int> depth = tree.depth_array();
+	for (int i = 0; i < depth.size(); i++)
+	{
+		std::cout << depth[i] << " ";
+	}
+	std::cout << std::endl;
 	return (0);
 }
