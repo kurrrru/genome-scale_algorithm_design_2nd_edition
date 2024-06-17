@@ -13,6 +13,7 @@ struct cartesian
 		_parent.assign(_n, -1);
 		_right.assign(_n, -1);
 		_left.assign(_n, -1);
+		_arr = arr;
 		std::stack<int> st;
 		for (int i = 0; i < _n; i++)
 		{
@@ -49,9 +50,32 @@ struct cartesian
 		return (parentheses(_root));
 	}
 
+	std::vector<int> depth_array()
+	{
+		std::vector<int> depth;
+		depth.push_back(-1);
+		depth_array_rec(_root, depth);
+		return (std::vector<int>(depth.begin() + 1, depth.end() - 1));
+	}
+
+	std::vector<int> node_array()
+	{
+		std::vector<int> node;
+		node_array_rec(_root, node);
+		return (node);
+	}
+
+private:
+	int _root;
+	int _n;
+	std::vector<int> _parent;
+	std::vector<int> _right;
+	std::vector<int> _left;
+	std::vector<int> _arr;
+
 	std::string parentheses(int cur)
 	{
-		if (cur == -1 || cur >= _n)
+		if (cur == -1)
 			return ("");
 		std::string result;
 		result += "(";
@@ -62,21 +86,6 @@ struct cartesian
 		return (result);
 	}
 
-	std::vector<int> depth_array()
-	{
-		std::vector<int> depth;
-		depth.push_back(-1);
-		depth_array_rec(_root, depth);
-		return (std::vector<int>(depth.begin() + 1, depth.end() - 1));
-	}
-
-private:
-	int _root;
-	int _n;
-	std::vector<int> _parent;
-	std::vector<int> _right;
-	std::vector<int> _left;
-
 	void depth_array_rec(int cur, std::vector<int> &depth)
 	{
 		if (cur == -1)
@@ -85,6 +94,19 @@ private:
 		depth_array_rec(_left[cur], depth);
 		depth_array_rec(_right[cur], depth);
 		depth.push_back(depth.end()[-1] - 1);
+	}
+
+	void node_array_rec(int cur, std::vector<int> &node)
+	{
+		if (cur == -1)
+			return ;
+		node.push_back(_arr[cur]);
+		node_array_rec(_left[cur], node);
+		if (_left[cur] != -1)
+			node.push_back(_arr[cur]);
+		node_array_rec(_right[cur], node);
+		if (_right[cur] != -1)
+			node.push_back(_arr[cur]);
 	}
 };
 
@@ -98,6 +120,12 @@ int main()
 	for (int i = 0; i < depth.size(); i++)
 	{
 		std::cout << depth[i] << " ";
+	}
+	std::cout << std::endl;
+	std::vector<int> node = tree.node_array();
+	for (int i = 0; i < node.size(); i++)
+	{
+		std::cout << node[i] << " ";
 	}
 	std::cout << std::endl;
 	return (0);
