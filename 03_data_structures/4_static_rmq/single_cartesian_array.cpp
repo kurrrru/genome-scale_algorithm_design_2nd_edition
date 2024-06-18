@@ -115,7 +115,7 @@ private:
 			node.push_back(_arr[cur]);
 	}
 
-	void cartesian::node_and_idx_rec(int cur, std::vector<int> &node, std::vector<int> &node_idx)
+	void node_and_idx_rec(int cur, std::vector<int> &node, std::vector<int> &node_idx)
 	{
 		if (cur == -1)
 			return ;
