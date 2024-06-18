@@ -277,17 +277,17 @@ private:
 	}
 };
 
-int main()
-{
-	std::vector<int> values = {8, 3, 5, 4, 1, 7, 9, 2, 6};
-	static_rmq rmq(values);
-	for (int i = 0; i < values.size(); i++)
-	{
-		for (int j = i + 1; j <= values.size(); j++)
-		{
-			int ans = rmq.staticRMQ(i, j);
-			std::cout << "rmq(" << i << "," << j << ") = " << ans << std::endl;
-		}
-	}
-	return (0);
-}
+// int main()
+// {
+// 	std::vector<int> values = {8, 3, 5, 4, 1, 7, 9, 2, 6};
+// 	static_rmq rmq(values);
+// 	for (int i = 0; i < values.size(); i++)
+// 	{
+// 		for (int j = i + 1; j <= values.size(); j++)
+// 		{
+// 			int ans = rmq.staticRMQ(i, j);
+// 			std::cout << "rmq(" << i << "," << j << ") = " << ans << std::endl;
+// 		}
+// 	}
+// 	return (0);
+// }
