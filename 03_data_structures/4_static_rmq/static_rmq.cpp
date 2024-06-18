@@ -1,8 +1,6 @@
 /*
 This is a simple implementation of a data structure for static range minimum query.
-The data structure is built in O(n) time and can answer queries in O(1) time in theory.
-However, in this implementation, the data structure is built in O(n) time and can answer queries in O(log n) time.
-To answer RMQ queries in O(1) time, sparse table for static_RMQ::_c is needed.
+The data structure is built in O(n) time and can answer queries in O(1) time.
 
 Attributes:
 	_arr: the array that RMQ queries are performed on.
@@ -82,30 +80,28 @@ static_rmq::static_rmq(std::vector<int> &arr)
 	_c.assign(_k, 0);
 	for (int i = 0; i < _k; i++)
 		_c[i] = _node[i * _x + _russian_table[_diff_adjacent[i * _x]][_x - 2]];
+	_c_sparse_table = sparse_table(_c);
 }
 
 // staticRMQ
 // @ l: left index
 // @ r: right index
-// Calculate the minimum value in [l, r) in O(log n) time
-// However, in theory, it can be done in O(1) time
+// Calculate the minimum value in [l, r) in O(1) time
 // return: minimum value in [l, r)
 int static_rmq::staticRMQ(int l, int r)
 {
 	int l_node = _node_idx[l];
-	int r_node = _node_idx[r];if (r_node - l_node == 1)
+	int r_node = _node_idx[r - 1]; // r - 1にすべきかも
+	if (r_node - l_node == 0)
 		return (_node[l_node]);
 	if (r_node - l_node <= _x)
-		return (_node[l_node + _russian_table[_diff_adjacent[l_node]][r_node - l_node - 2]]);
-	return (std::min(RMQ_c((l_node - 1) / _x + 1, r_node / _x), std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x - 1 + _russian_table[_diff_adjacent[r_node - _x - 1]][_x - 1]])));
+		return (_node[l_node + _russian_table[_diff_adjacent[l_node]][r_node - l_node - 1]]);
+	return (std::min(RMQ_c((l_node - 1) / _x + 1, r_node / _x), std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x + _russian_table[_diff_adjacent[r_node - _x]][_x - 1]])));
 }
 
 int static_rmq::RMQ_c(int l, int r)
 {
-	int ans = 1 << 30;
-	for (int i = l; i < r; i++)
-		ans = std::min(ans, _c[i]);
-	return (ans);
+	return (_c_sparse_table.staticRMQ(l, r));
 }
 
 void static_rmq::fill_russian_table()

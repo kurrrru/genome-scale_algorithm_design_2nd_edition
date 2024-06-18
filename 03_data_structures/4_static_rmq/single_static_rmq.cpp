@@ -1,4 +1,6 @@
 /*
+! This implementation is not complete. See static_rmq.cpp for the complete implementation.
+
 This is a simple implementation of a data structure for static range minimum query.
 The data structure is built in O(n) time and can answer queries in O(1) time in theory.
 However, in this implementation, the data structure is built in O(n) time and can answer queries in O(log n) time.

@@ -2,6 +2,7 @@
 #define STATIC_RMQ_H
 
 #include "cartesian.h"
+#include "sparse_table.h"
 #include <vector>
 
 struct static_rmq
@@ -17,6 +18,7 @@ private:
 	std::vector<int> _diff_adjacent;
 	std::vector<std::vector<int> > _russian_table;
 	std::vector<int> _c;
+	sparse_table _c_sparse_table;
 	int _n;
 	int _x;
 	int _k;
