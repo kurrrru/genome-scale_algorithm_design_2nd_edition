@@ -65,6 +65,12 @@ struct cartesian
 		return (node);
 	}
 
+	void node_and_idx(std::vector<int> &node, std::vector<int> &node_idx)
+	{
+		node_idx.assign(_n, -1);
+		node_and_idx_rec(_root, node, node_idx);
+	}
+
 private:
 	int _root;
 	int _n;
@@ -100,33 +106,47 @@ private:
 	{
 		if (cur == -1)
 			return ;
-		node.push_back(_arr[cur]);
-		node_array_rec(_left[cur], node);
 		if (_left[cur] != -1)
 			node.push_back(_arr[cur]);
+		node_array_rec(_left[cur], node);
+		node.push_back(_arr[cur]);
 		node_array_rec(_right[cur], node);
+		if (_right[cur] != -1)
+			node.push_back(_arr[cur]);
+	}
+
+	void cartesian::node_and_idx_rec(int cur, std::vector<int> &node, std::vector<int> &node_idx)
+	{
+		if (cur == -1)
+			return ;
+		if (_left[cur] != -1)
+			node.push_back(_arr[cur]);
+		node_and_idx_rec(_left[cur], node, node_idx);
+		node_idx[cur] = node.size();
+		node.push_back(_arr[cur]);
+		node_and_idx_rec(_right[cur], node, node_idx);
 		if (_right[cur] != -1)
 			node.push_back(_arr[cur]);
 	}
 };
 
-int main()
-{
-	std::vector<int> values = {7, 2, 4, 3, 0, 6, 8, 1, 5};
-	cartesian tree;
-	tree.build(values);
-	std::cout << tree.parentheses() << std::endl;
-	std::vector<int> depth = tree.depth_array();
-	for (int i = 0; i < depth.size(); i++)
-	{
-		std::cout << depth[i] << " ";
-	}
-	std::cout << std::endl;
-	std::vector<int> node = tree.node_array();
-	for (int i = 0; i < node.size(); i++)
-	{
-		std::cout << node[i] << " ";
-	}
-	std::cout << std::endl;
-	return (0);
-}
+// int main()
+// {
+// 	std::vector<int> values = {7, 2, 4, 3, 0, 6, 8, 1, 5};
+// 	cartesian tree;
+// 	tree.build(values);
+// 	std::cout << tree.parentheses() << std::endl;
+// 	std::vector<int> depth = tree.depth_array();
+// 	for (int i = 0; i < depth.size(); i++)
+// 	{
+// 		std::cout << depth[i] << " ";
+// 	}
+// 	std::cout << std::endl;
+// 	std::vector<int> node = tree.node_array();
+// 	for (int i = 0; i < node.size(); i++)
+// 	{
+// 		std::cout << node[i] << " ";
+// 	}
+// 	std::cout << std::endl;
+// 	return (0);
+// }
