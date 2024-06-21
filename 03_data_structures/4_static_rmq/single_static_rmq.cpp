@@ -26,6 +26,7 @@ Attributes:
 #include <stack>
 #include <string>
 #include <iomanip>
+#include <cassert>
 
 static int popcount(int n)
 {
@@ -197,6 +198,7 @@ struct sparse_table
 
 	int staticRMQ(int i, int j)
 	{
+		assert(0 <= i && i < j && j <= _n);
 		int k = _log_table[j - i];
 		return (std::min(_table[i][k], _table[j - (1 << k)][k]));
 	}
@@ -256,6 +258,7 @@ struct static_rmq
 	// return: minimum value in [l, r)
 	int staticRMQ(int l, int r)
 	{
+		assert(0 <= l && l < r && r <= _arr_size);
 		int l_node = _node_idx[l];
 		int r_node = _node_idx[r - 1];
 		if (r_node == l_node)

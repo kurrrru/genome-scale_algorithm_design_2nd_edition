@@ -1,4 +1,5 @@
 #include <vector>
+#include <cassert>
 
 struct sparse_table
 {
@@ -23,6 +24,7 @@ struct sparse_table
 
 	int staticRMQ(int i, int j)
 	{
+		assert(0 <= i && i < j && j <= _n);
 		int k = _log_table[j - i];
 		return (std::min(_table[i][k], _table[j - (1 << k)][k]));
 	}

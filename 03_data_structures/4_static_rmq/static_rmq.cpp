@@ -90,6 +90,7 @@ static_rmq::static_rmq(std::vector<int> &arr)
 // return: minimum value in [l, r)
 int static_rmq::staticRMQ(int l, int r)
 {
+	assert(0 <= l && l < r && r <= _arr_size);
 	int l_node = _node_idx[l];
 	int r_node = _node_idx[r - 1];
 	if (r_node == l_node)

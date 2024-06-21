@@ -1,6 +1,5 @@
 #include "sparse_table.h"
 
-
 sparse_table::sparse_table()
 {
 }
@@ -30,6 +29,7 @@ sparse_table::sparse_table(std::vector<int> &arr)
 
 int sparse_table::staticRMQ(int i, int j)
 {
+	assert(0 <= i && i < j && j <= _n);
 	int k = _log_table[j - i];
 	return (std::min(_table[i][k], _table[j - (1 << k)][k]));
 }

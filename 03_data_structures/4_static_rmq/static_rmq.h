@@ -4,6 +4,7 @@
 #include "cartesian.h"
 #include "sparse_table.h"
 #include <vector>
+#include <cassert>
 
 struct static_rmq
 {
