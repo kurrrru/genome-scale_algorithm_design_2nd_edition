@@ -2,6 +2,7 @@
 #define SPARSE_TABLE_H
 
 #include <vector>
+#include <cassert>
 
 struct sparse_table
 {
