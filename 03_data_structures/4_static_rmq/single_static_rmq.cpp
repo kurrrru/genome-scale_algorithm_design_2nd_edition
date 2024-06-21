@@ -1,6 +1,4 @@
 /*
-! This implementation is not complete. See static_rmq.cpp for the complete implementation.
-
 This is a simple implementation of a data structure for static range minimum query.
 The data structure is built in O(n) time and can answer queries in O(1) time in theory.
 However, in this implementation, the data structure is built in O(n) time and can answer queries in O(log n) time.
@@ -27,6 +25,7 @@ Attributes:
 #include <vector>
 #include <stack>
 #include <string>
+#include <iomanip>
 
 static int popcount(int n)
 {
@@ -175,6 +174,38 @@ private:
 	}
 };
 
+struct sparse_table
+{
+	sparse_table() = default;
+	sparse_table(sparse_table &st) = default;
+	~sparse_table() = default;
+
+	sparse_table(std::vector<int> &arr)
+	{
+		_n = arr.size();
+		_log_table.assign(_n + 1, 0);
+		for (int i = 2; i <= _n; i++)
+			_log_table[i] = _log_table[i / 2] + 1;
+		_log_n = _log_table[_n];
+		_table.assign(_n, std::vector<int>(_log_n + 1, 0));
+		for (int i = 0; i < _n; i++)
+			_table[i][0] = arr[i];
+		for (int j = 1; j <= _log_n; j++)
+			for (int i = 0; i + (1 << j) <= _n; i++)
+				_table[i][j] = std::min(_table[i][j - 1], _table[i + (1 << (j - 1))][j - 1]);
+	}
+
+	int staticRMQ(int i, int j)
+	{
+		int k = _log_table[j - i];
+		return (std::min(_table[i][k], _table[j - (1 << k)][k]));
+	}
+private:
+	std::vector<std::vector<int>> _table;
+	std::vector<int> _log_table;
+	int _n, _log_n;
+};
+
 struct static_rmq
 {
 	// static_rmq
@@ -186,7 +217,7 @@ struct static_rmq
 	{
 		_arr = arr;
 		_arr_size = _arr.size();
-		_arr.push_back(1 << 30);
+		// _arr.push_back(1 << 30);
 		_cartesian.build(_arr);
 		_cartesian.node_and_idx(_node, _node_idx);
 		_depth = _cartesian.depth_array();
@@ -214,6 +245,7 @@ struct static_rmq
 		_c.assign(_k, 0);
 		for (int i = 0; i < _k; i++)
 			_c[i] = _node[i * _x + _russian_table[_diff_adjacent[i * _x]][_x - 2]];
+		_c_sparse_table = sparse_table(_c);
 	}
 
 	// staticRMQ
@@ -225,11 +257,48 @@ struct static_rmq
 	int staticRMQ(int l, int r)
 	{
 		int l_node = _node_idx[l];
-		int r_node = _node_idx[r];if (r_node - l_node == 1)
+		int r_node = _node_idx[r - 1];
+		if (r_node == l_node)
 			return (_node[l_node]);
 		if (r_node - l_node <= _x)
-			return (_node[l_node + _russian_table[_diff_adjacent[l_node]][r_node - l_node - 2]]);
-		return (std::min(RMQ_c((l_node - 1) / _x + 1, r_node / _x), std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x - 1 + _russian_table[_diff_adjacent[r_node - _x - 1]][_x - 1]])));
+			return (_node[l_node + _russian_table[_diff_adjacent[l_node]][r_node - l_node - 1]]);
+		if ((l_node - 1) / _x + 1 == r_node / _x)
+			return (std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x + _russian_table[_diff_adjacent[r_node - _x]][_x - 1]]));
+		return (std::min(RMQ_c((l_node - 1) / _x + 1, r_node / _x), std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x + _russian_table[_diff_adjacent[r_node - _x]][_x - 1]])));
+	}
+
+	void summary()
+	{
+		std::cout << std::setw(10) << "arr: ";
+		for (int i = 0; i < _arr_size; i++)
+			std::cout << std::setw(4) << _arr[i] << " \n"[i == _arr_size - 1];
+		std::cout << "_n = " << _n << ", _x = " << _x << ", _k = " << _k << std::endl;
+		std::cout << std::setw(10) << "node: ";
+		for (int i = 0; i < _n; i++)
+		{
+			if (_node[i] == (1 << 30))
+				std::cout << std::setw(4) << "inf" << " \n"[i == _n - 1];
+			else
+				std::cout << std::setw(4) << _node[i] << " \n"[i == _n - 1];
+		}
+		std::cout << std::setw(10) << "node_idx: ";
+		for (int i = 0; i < (int)_node_idx.size(); i++)
+			std::cout << std::setw(4) << _node_idx[i] << " \n"[i == _node_idx.size() - 1];
+		std::cout << std::setw(10) << "depth: ";
+		for (int i = 0; i < _n; i++)
+			std::cout << std::setw(4) << _depth[i] << " \n"[i == _n - 1];
+		std::cout << std::setw(10) << "diff_adj: ";
+		for (int i = 0; i < _n; i++)
+			std::cout << std::setw(4) << _diff_adjacent[i] << " \n"[i == _n - 1];
+		std::cout << std::setw(10) << "russian: " << std::endl;
+		for (int i = 0; i < (1 << _x); i++)
+		{
+			for (int j = 0; j < _x; j++)
+				std::cout << std::setw(4) << _russian_table[i][j] << " \n"[j == _x - 1];
+		}
+		std::cout << std::setw(10) << "c: ";
+		for (int i = 0; i < _k; i++)
+			std::cout << std::setw(4) << _c[i] << " \n"[i == _k - 1];
 	}
 
 private:
@@ -241,6 +310,7 @@ private:
 	std::vector<int> _diff_adjacent;
 	std::vector<std::vector<int> > _russian_table;
 	std::vector<int> _c;
+	sparse_table _c_sparse_table;
 	int _n;
 	int _x;
 	int _k;
@@ -248,10 +318,7 @@ private:
 
 	int RMQ_c(int l, int r)
 	{
-		int ans = 1 << 30;
-		for (int i = l; i < r; i++)
-			ans = std::min(ans, _c[i]);
-		return (ans);
+		return (_c_sparse_table.staticRMQ(l, r));
 	}
 
 	void fill_russian_table()

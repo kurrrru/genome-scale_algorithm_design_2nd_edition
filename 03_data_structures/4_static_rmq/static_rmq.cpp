@@ -91,11 +91,13 @@ static_rmq::static_rmq(std::vector<int> &arr)
 int static_rmq::staticRMQ(int l, int r)
 {
 	int l_node = _node_idx[l];
-	int r_node = _node_idx[r - 1]; // r - 1にすべきかも
-	if (r_node - l_node == 0)
+	int r_node = _node_idx[r - 1];
+	if (r_node == l_node)
 		return (_node[l_node]);
 	if (r_node - l_node <= _x)
 		return (_node[l_node + _russian_table[_diff_adjacent[l_node]][r_node - l_node - 1]]);
+	if ((l_node - 1) / _x + 1 == r_node / _x)
+		return (std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x + _russian_table[_diff_adjacent[r_node - _x]][_x - 1]]));
 	return (std::min(RMQ_c((l_node - 1) / _x + 1, r_node / _x), std::min(_node[l_node + _russian_table[_diff_adjacent[l_node]][_x - 1]], _node[r_node - _x + _russian_table[_diff_adjacent[r_node - _x]][_x - 1]])));
 }
 
