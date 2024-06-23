@@ -7,7 +7,7 @@ int cost(char a, char b)
 	int match = 0, mismatch = 1, gap = 1;
 	if (a == b)
 		return match;
-	if (a == '-' ^ b == '-')
+	if (a == '-' || b == '-')
 		return gap;
 	return mismatch;
 }
