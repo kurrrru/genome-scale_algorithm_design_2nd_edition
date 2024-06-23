@@ -15,19 +15,25 @@ int cost(char a, char b)
 int edit_distance(string a, string b)
 {
 	int n = a.size(), m = b.size();
-	vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
-	for (int i = 1; i <= n; i++)
-		dp[i][0] = dp[i - 1][0] + cost(a[i - 1], '-');
+	if (n < m)
+		swap(a, b), swap(n, m);
+	vector<int> dp(m + 1, 0);
 	for (int j = 1; j <= m; j++)
-		dp[0][j] = dp[0][j - 1] + cost('-', b[j - 1]);
+		dp[j] = dp[j - 1] + cost('-', b[j - 1]);
 	for (int i = 1; i <= n; i++)
+	{
+		int prev = dp[0];
+		dp[0] = dp[0] + cost(a[i - 1], '-');
 		for (int j = 1; j <= m; j++)
 		{
-			dp[i][j] = dp[i - 1][j - 1] + cost(a[i - 1], b[j - 1]);
-			dp[i][j] = min(dp[i][j], dp[i - 1][j] + cost(a[i - 1], '-'));
-			dp[i][j] = min(dp[i][j], dp[i][j - 1] + cost('-', b[j - 1]));
+			int tmp = dp[j];
+			dp[j] = prev + cost(a[i - 1], b[j - 1]);
+			dp[j] = min(dp[j], dp[j - 1] + cost('-', b[j - 1]));
+			dp[j] = min(dp[j], tmp + cost(a[i - 1], '-'));
+			prev = tmp;
 		}
-	return dp[n][m];
+	}
+	return dp[m];
 }
 
 int main()
