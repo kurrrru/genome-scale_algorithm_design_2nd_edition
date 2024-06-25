@@ -128,6 +128,14 @@ namespace
 	};
 }
 
+// sparse_edit_distance
+// @ s1: the first string
+// @ s2: the second string
+// compute the edit distance between s1 and s2 using the sparse dynamic programming approach
+// time: O((m + n + |M|)log m)
+// space: O(m + |M|)
+// |M| is the number of pairs (i, j) such that s1[i] = s2[j]
+// return: the edit distance between s1 and s2
 int sparse_edit_distance(const std::string &s1, const std::string &s2)
 {
 	int m = s1.size();
@@ -154,6 +162,15 @@ int sparse_edit_distance(const std::string &s1, const std::string &s2)
 	return (bst.rmq(0, m) + m + n);
 }
 
+// sparse_LCS
+// @ s1: the first string
+// @ s2: the second string
+// compute the length of the longest common subsequence between s1 and s2
+//   using the sparse dynamic programming approach on the edit distance
+// time: O((m + n + |M|)log m)
+// space: O(m + |M|)
+// |M| is the number of pairs (i, j) such that s1[i] = s2[j]
+// return: the length of the longest common subsequence between s1 and s2
 int sparse_LCS(const std::string &s1, const std::string &s2)
 {
 	int m = s1.size();
