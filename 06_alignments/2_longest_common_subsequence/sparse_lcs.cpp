@@ -156,7 +156,7 @@ int sparse_edit_distance(const std::string &s1, const std::string &s2)
 	for (int p = 0; p < (int)M.size(); p++)
 	{
 		auto [i, j] = M[p];
-		int d = i + j + bst.rmq(0, i + 1);
+		int d = i + j + bst.rmq(0, i);
 		bst.update(i + 1, d - i - j - 2);
 	}
 	return (bst.rmq(0, m) + m + n);
