@@ -22,12 +22,12 @@ int local_alignment(std::string s1, std::string s2, int (*s)(char, char), int ga
 	return dp[m][n];
 }
 
-int main()
-{
-	std::string s1 = "AGTACGCAGTACGCA";
-	std::string s2 = "CGCCGTAGC";
-	int gap_penalty = 1;
-	int score = local_alignment(s1, s2, [](char a, char b) { return a == b ? 1 : -1; }, gap_penalty);
-	std::cout << "Local alignment score: " << score << std::endl;
-	return 0;
-}
+// int main()
+// {
+// 	std::string s1 = "AGTACGCAGTACGCA";
+// 	std::string s2 = "CGCCGTAGC";
+// 	int gap_penalty = 1;
+// 	int score = local_alignment(s1, s2, [](char a, char b) { return a == b ? 1 : -1; }, gap_penalty);
+// 	std::cout << "Local alignment score: " << score << std::endl;
+// 	return 0;
+// }
