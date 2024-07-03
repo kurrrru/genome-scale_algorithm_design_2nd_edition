@@ -26,12 +26,12 @@ int global_alignment(std::string s1, std::string s2, int (*s)(char, char), int g
 	return dp[m][n];
 }
 
-int main()
-{
-	std::string s1 = "AGTACGCA";
-	std::string s2 = "TATGC";
-	int gap_penalty = 1;
-	int score = global_alignment(s1, s2, [](char a, char b) { return a == b ? 1 : -1; }, gap_penalty);
-	std::cout << "Global alignment score: " << score << std::endl;
-	return 0;
-}
+// int main()
+// {
+// 	std::string s1 = "AGTACGCA";
+// 	std::string s2 = "TATGC";
+// 	int gap_penalty = 1;
+// 	int score = global_alignment(s1, s2, [](char a, char b) { return a == b ? 1 : -1; }, gap_penalty);
+// 	std::cout << "Global alignment score: " << score << std::endl;
+// 	return 0;
+// }
