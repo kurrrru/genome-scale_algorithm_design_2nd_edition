@@ -19,7 +19,11 @@ int local_alignment(std::string s1, std::string s2, int (*s)(char, char), int ga
 			dp[i][j] = std::max(dp[i][j], dp[i][j - 1] - gap_penalty);
 		}
 	}
-	return dp[m][n];
+	int max_score = 0;
+	for (int i = 0; i <= m; i++)
+		for (int j = 0; j <= n; j++)
+			max_score = std::max(max_score, dp[i][j]);
+	return max_score;
 }
 
 // int main()
