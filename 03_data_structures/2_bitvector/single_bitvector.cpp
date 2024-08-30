@@ -67,6 +67,22 @@ struct bitvector {
 		return (_sum[i >> 5] + popcount(_bit[i >> 5] & ((1u << (i & 0b11111)) - 1)));
 	}
 
+	// rank
+	// @ i: index
+	// @ b: the bit to count
+	// Count the occurrence of b in [0, i) in O(1) time
+	// O(n) bits are used in this implementation, but it can be reduced to n + o(n) bits
+	// return: the occurrence of b in [0, i)
+	int rank(int i, bool b)
+	{
+		assert(i <= _len);
+		if (i == 0)
+			return (0);
+		if (b)
+			return (rank(i));
+		return (i - rank(i));
+	}
+
 	// select
 	// @ j: the j-th occurrence of 1
 	// Ideally, time complexity is O(1), but it is O(log n) in this implementation 
@@ -79,6 +95,28 @@ struct bitvector {
 		{
 			int mid = (left + right) >> 1;
 			if (rank(mid) < j)
+				left = mid;
+			else
+				right = mid;
+		}
+		return (left);
+	}
+
+	// select
+	// @ j: the j-th occurrence of b
+	// @ b: the bit to find
+	// Ideally, time complexity is O(1), but it is O(log n) in this implementation
+	// return: the index of the j-th occurrence of b
+	int select(int j, bool b)
+	{
+		assert(0 < j && j <= rank(_len, b));
+		if (b)
+			return (select(j));
+		int left = -1, right = _len;
+		while (left + 1 < right)
+		{
+			int mid = (left + right) >> 1;
+			if (rank(mid, b) < j)
 				left = mid;
 			else
 				right = mid;

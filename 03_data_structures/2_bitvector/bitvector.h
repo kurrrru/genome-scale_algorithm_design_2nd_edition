@@ -11,7 +11,9 @@ struct bitvector
 	void build(std::vector<bool> &arr);
 	bool operator[](int i);
 	int rank(int i);
+	int rank(int i, bool b);
 	int select(int j);
+	int select(int j, bool b);
 private:
 	std::vector<unsigned int> _bit;
 	std::vector<unsigned int> _sum;
