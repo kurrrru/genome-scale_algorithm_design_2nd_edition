@@ -98,7 +98,7 @@ double viterbi_training(const std::vector<int> &seq, std::vector<std::vector<dou
 	const int H = trans.size();
 	std::vector<std::vector<double>> v_dp;
 	std::vector<int> path;
-	double prob = -1;
+	double prob = 0;
 	for (int iter = 0; iter < max_iter; iter++)
 	{
 		viterbi_dp(seq, trans, emit, v_dp);
