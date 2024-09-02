@@ -4,7 +4,7 @@ double viterbi_dp(const std::vector<int> &seq, const std::vector<std::vector<dou
 {
 	int N = seq.size();
 	int H = trans.size();
-	v_dp.resize(N + 2, std::vector<double>(H, 0));
+	v_dp.assign(N + 2, std::vector<double>(H, 0));
 	v_dp[0][0] = 1;
 	for (int i = 0; i < N; i++)
 	{

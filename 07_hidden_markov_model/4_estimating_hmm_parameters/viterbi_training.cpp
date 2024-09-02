@@ -4,7 +4,7 @@ double viterbi_dp(const std::vector<int> &seq, const std::vector<std::vector<dou
 {
 	int N = seq.size();
 	int H = trans.size();
-	v_dp.resize(N + 2, std::vector<double>(H, 0));
+	v_dp.assign(N + 2, std::vector<double>(H, 0));
 	v_dp[0][0] = 1;
 	for (int i = 0; i < N; i++)
 	{
@@ -58,7 +58,7 @@ void estimate_ec(const std::vector<int> &seq, const std::vector<std::vector<doub
 	const int N = seq.size();
 	const int H = trans.size();
 	const int K = emit[0].size();
-	ec.resize(H, std::vector<double>(K, 0));
+	ec.assign(H, std::vector<double>(K, 0));
 	for (int i = 0; i < N; i++)
 	{
 		ec[path[i + 1]][seq[i]]++;
@@ -69,7 +69,7 @@ void estimate_tc(const std::vector<int> &seq, const std::vector<std::vector<doub
 {
 	const int N = seq.size();
 	const int H = trans.size();
-	tc.resize(H, std::vector<double>(H, 0));
+	tc.assign(H, std::vector<double>(H, 0));
 	for (int i = 0; i < N + 1; i++)
 	{
 		tc[path[i]][path[i + 1]]++;

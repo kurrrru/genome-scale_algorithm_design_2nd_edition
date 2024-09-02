@@ -56,7 +56,7 @@ void estimate_ec(const std::vector<int> &seq, const std::vector<std::vector<doub
 	const int H = trans.size();
 	const int K = emit[0].size();
 	const double prob_s = f_dp[N + 1][H - 1];
-	ec.resize(H, std::vector<double>(K, 0));
+	ec.assign(H, std::vector<double>(K, 0));
 	for (int i = 0; i < N; i++)
 	{
 		for (int h = 1; h < H - 1; h++)
@@ -74,7 +74,7 @@ void estimate_tc(const std::vector<int> &seq, const std::vector<std::vector<doub
 	const int N = seq.size();
 	const int H = trans.size();
 	const double prob_s = f_dp[N + 1][H - 1];
-	tc.resize(H, std::vector<double>(H, 0));
+	tc.assign(H, std::vector<double>(H, 0));
 	for (int i = 0; i < N + 1; i++)
 	{
 		for (int h_prev = 0; h_prev < H - 1; h_prev++)

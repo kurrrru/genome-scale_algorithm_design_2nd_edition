@@ -4,7 +4,7 @@ double backward_dp(const std::vector<int> &seq, const std::vector<std::vector<do
 {
 	int N = seq.size();
 	int H = trans.size();
-	b_dp.resize(N + 2, std::vector<double>(H, 0));
+	b_dp.assign(N + 2, std::vector<double>(H, 0));
 	b_dp[N + 1][H - 1] = 1;
 	for (int i = N - 1; i >= 0; i--)
 	{
