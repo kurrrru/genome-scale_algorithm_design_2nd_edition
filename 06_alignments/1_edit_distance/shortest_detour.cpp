@@ -52,7 +52,7 @@ int restricted_edit_distance(const std::string &s1, const std::string &s2, int t
 	std::vector<std::vector<int> > dp(m + 1);
 	for (int i = 0; i <= m; i++)
 	{
-		dp[i].resize(n - m + 2 * x + 1 - std::max(x - i, 0) - std::max(x + i - m, 0), 0);
+		dp[i].assign(n - m + 2 * x + 1 - std::max(x - i, 0) - std::max(x + i - m, 0), 0);
 		if (i == 0)
 			for (int j = 1; j <= n - m + x; j++)
 				dp[i][j] = dp[i][j - 1] + ins;
